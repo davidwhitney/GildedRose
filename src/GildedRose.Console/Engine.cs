@@ -7,29 +7,35 @@ namespace GildedRose.Console
     public class Engine
     {
         private readonly IList<Item> _items;
-        private readonly List<string> _immutable;
-        private readonly List<string> _agesWell;
-        private readonly List<string> _fastAgeWell;
-        private readonly List<string> _degradesTwiceAsFast;
+        private List<string> Immutable { get; set; } = new List<string>();
+        private List<string> IncreasesInQuality { get; set; } = new List<string>();
+        private List<string> AccelleratesInQuality { get; set; } = new List<string>();
+        private List<string> DegradesFast { get; set; } = new List<string>();
+        private readonly Dictionary<Func<Item, bool>, Action<Item>> _rules;
 
         public Engine(IList<Item> items)
         {
             _items = items;
-            _immutable = new List<string>
+            Immutable.Add("Sulfuras, Hand of Ragnaros");
+            IncreasesInQuality.Add("Aged Brie");
+            AccelleratesInQuality.Add("Backstage passes");
+            DegradesFast.Add("Conjured");
+
+            _rules = new Dictionary<Func<Item, bool>, Action<Item>>
             {
-                "Sulfuras, Hand of Ragnaros"
-            };
-            _agesWell = new List<string>
-            {
-                "Aged Brie",
-            };
-            _fastAgeWell = new List<string>
-            {
-                "Backstage passes to a TAFKAL80ETC concert"
-            };
-            _degradesTwiceAsFast = new List<string>
-            {
-                "Conjured"
+                {
+                    i => i.Name.StartsWithAny(IncreasesInQuality) || i.Name.StartsWithAny(AccelleratesInQuality),
+                    i => i.Quality = i.Quality + 2
+                },
+                {i => i.Name.StartsWithAny(IncreasesInQuality) && i.SellIn < 0, i => i.Quality++},
+                {i => i.Name.StartsWithAny(AccelleratesInQuality) && i.SellIn < 11, i => i.Quality++},
+                {i => i.Name.StartsWithAny(AccelleratesInQuality) && i.SellIn < 6, i => i.Quality++},
+                {i => i.Name.StartsWithAny(AccelleratesInQuality) && i.SellIn < 0, i => i.Quality = 0},
+                {
+                    i => !IncreasesInQuality.Contains(i.Name) && !AccelleratesInQuality.Contains(i.Name) && i.SellIn < 0,
+                    i => i.Quality--
+                },
+                {i => i.Name.StartsWithAny(DegradesFast), i => i.Quality--}
             };
         }
 
@@ -37,7 +43,7 @@ namespace GildedRose.Console
         {
             foreach (var item in _items)
             {
-                if (_immutable.Any(x=>x.StartsWith(item.Name)))
+                if (Immutable.Any(x=>x.StartsWith(item.Name)))
                 {
                     continue;
                 }
@@ -45,26 +51,9 @@ namespace GildedRose.Console
                 item.SellIn--;
                 item.Quality = item.Quality - 1;
 
-                var rules = new Dictionary<Func<Item, bool>, Action<Item>>
+                foreach (var rule in _rules.Where(r=>r.Key(item)))
                 {
-                    {i => _agesWell.Contains(i.Name) || _fastAgeWell.Contains(i.Name), i => i.Quality = i.Quality + 2},
-                    {i => _fastAgeWell.Contains(i.Name) && i.SellIn < 11, i => i.Quality++},
-                    {i => _fastAgeWell.Contains(i.Name) && i.SellIn < 6, i => i.Quality++},
-                    {i => _agesWell.Contains(i.Name) && i.SellIn < 0, i => i.Quality++},
-                    {i => _fastAgeWell.Contains(i.Name) && i.SellIn < 0, i => i.Quality = 0},
-                    {
-                        i => !_agesWell.Contains(item.Name) && !_fastAgeWell.Contains(item.Name) && item.SellIn < 0,
-                        i => i.Quality--
-                    },
-                    {i => _degradesTwiceAsFast.Any(stub => item.Name.StartsWith(stub)), i => i.Quality--}
-                };
-
-                foreach (var rule in rules)
-                {
-                    if (rule.Key(item))
-                    {
-                        rule.Value(item);
-                    }
+                    rule.Value(item);
                 }
             }
 
@@ -82,6 +71,14 @@ namespace GildedRose.Console
             {
                 item.Quality = 0;
             }
+        }
+    }
+
+    public static class ListStringExtensions
+    {
+        public static bool StartsWithAny(this string testString, IEnumerable<string> collectionOfStubs)
+        {
+            return collectionOfStubs.Any(testString.StartsWith);
         }
     }
 }

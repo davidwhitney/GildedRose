@@ -4,13 +4,13 @@ namespace GildedRose.Console
 {
     class Program
     {
-        private static IList<Item> Items { get; set; }
+        private static IList<Item> Items;
 
         public static void Main(string[] args)
         {
             System.Console.WriteLine("OMGHAI!");
 
-            var data = Items = new List<Item>
+            Items = new List<Item>
             {
                 new Item {Name = "+5 Dexterity Vest", SellIn = 10, Quality = 20},
                 new Item {Name = "Aged Brie", SellIn = 2, Quality = 0},
@@ -25,7 +25,7 @@ namespace GildedRose.Console
                 new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
             };
 
-            var engine = new Engine(data);
+            var engine = new Engine(Items);
             engine.IncrementAge();
 
             System.Console.ReadKey();

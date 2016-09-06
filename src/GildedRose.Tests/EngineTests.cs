@@ -90,7 +90,7 @@ namespace GildedRose.Tests
         [Test]
         public void IncrementAge_BackStagePass_IncreasesBy2WithinTenDaysOfSellIn()
         {
-            _items.Add(new Item {Name = "Backstage passes to a TAFKAL80ETC concert", Quality = 0, SellIn = 10});
+            _items.Add(new Item {Name = "Backstage passes blah blah", Quality = 0, SellIn = 10});
 
             _engine.IncrementAge();
 
@@ -100,7 +100,7 @@ namespace GildedRose.Tests
         [Test]
         public void IncrementAge_BackStagePass_IncreasesBy3WithinFiveDaysOfSellIn()
         {
-            _items.Add(new Item {Name = "Backstage passes to a TAFKAL80ETC concert", Quality = 0, SellIn = 5});
+            _items.Add(new Item {Name = "Backstage passes blah blah", Quality = 0, SellIn = 5});
 
             _engine.IncrementAge();
 
@@ -110,7 +110,7 @@ namespace GildedRose.Tests
         [Test]
         public void IncrementAge_BackStagePass_ZeroQualityOnceExpired()
         {
-            _items.Add(new Item {Name = "Backstage passes to a TAFKAL80ETC concert", Quality = 10, SellIn = 0});
+            _items.Add(new Item {Name = "Backstage passes blah blah", Quality = 10, SellIn = 0});
 
             _engine.IncrementAge();
 
