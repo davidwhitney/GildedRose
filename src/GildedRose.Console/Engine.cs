@@ -43,7 +43,7 @@ namespace GildedRose.Console
         {
             foreach (var item in _items)
             {
-                if (Immutable.Any(x=>x.StartsWith(item.Name)))
+                if (item.Name.StartsWithAny(Immutable))
                 {
                     continue;
                 }
