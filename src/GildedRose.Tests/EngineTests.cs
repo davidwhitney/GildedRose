@@ -38,6 +38,16 @@ namespace GildedRose.Tests
         }
 
         [Test]
+        public void IncrementAge_ConjuredItem_QualityDecreasesTwiceAsFast()
+        {
+            _items.Add(new Item {Name = "Conjured Thing", Quality = 5, SellIn = 1});
+
+            _engine.IncrementAge();
+
+            Assert.That(_items[0].Quality, Is.EqualTo(3));
+        }
+
+        [Test]
         public void IncrementAge_SellByHasPast_QualityDecreasesTwiceAsFast()
         {
             _items.Add(new Item {Name = "Thing", Quality = 5, SellIn = -1});
