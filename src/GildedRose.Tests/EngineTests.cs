@@ -36,7 +36,7 @@ namespace GildedRose.Tests
 
             Assert.That(_items[0].Quality, Is.EqualTo(4));
         }
-
+        
         [Test]
         public void IncrementAge_ConjuredItem_QualityDecreasesTwiceAsFast()
         {
@@ -65,6 +65,16 @@ namespace GildedRose.Tests
             _engine.IncrementAge();
 
             Assert.That(_items[0].Quality, Is.EqualTo(6));
+        }
+
+        [Test]
+        public void AgedBrie_PastSellBy_IncreasesTwiceAsFast()
+        {
+            _items.Add(new Item {Name = "Aged Brie", Quality = 5, SellIn = -1});
+
+            _engine.IncrementAge();
+
+            Assert.That(_items[0].Quality, Is.EqualTo(7));
         }
 
         [Test]
